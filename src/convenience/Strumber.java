@@ -13,19 +13,13 @@ package convenience;
 public class Strumber {
     
     private String s;
-    public String getS(){
-        return s;
-    }
+    public String getS(){ return s; }
+    
     private int i;
-    public int getI(){
-        return i;
-    }
+    public int getI(){ return i; }
     
-    private double d;
-    public double getD(){
-        return d;
-    }
-    
+    private double d; 
+    public double getD(){ return d; }
     
     public Strumber(String s, int i){
         this.s = s;

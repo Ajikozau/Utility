@@ -8,8 +8,20 @@ package convenience;
 /**
  *
  * @author Ajikozau
+ * @param <A>
+ * @param <B>
+ * @param <C>
  */
 public class Trio<A, B, C> {
+    
+    private A a;
+    public A getA(){ return a; }
+    
+    private B b;
+    public B getB(){ return b; }
+    
+    private C c;
+    public C getC(){ return c; }
     
     public Trio(A a, B b, C c){
         this.a = a; 
@@ -17,17 +29,9 @@ public class Trio<A, B, C> {
         this.c = c;
     }
     
-    private A a;
-    private B b;
-    private C c;
     
-    public A getA(){
-        return a;
-    }
-    public B getB(){
-        return b;       
-    }
-    public C getC(){
-        return c;
-    }
+    
+ 
+    
+    
 }
