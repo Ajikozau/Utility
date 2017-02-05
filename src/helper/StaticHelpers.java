@@ -17,21 +17,18 @@ import functionalInterfaces.Object2DBuilderReturn;
 import functionalInterfaces.Object3DBuilder;
 import functionalInterfaces.Object3DBuilderReturn;
 import functionalInterfaces.Selector;
-import java.awt.Point;
-import java.io.PrintStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+//import org.apache.commons.math3.analysis.UnivariateFunction;
+//import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 
 public class StaticHelpers {
     public static int[] parseIntegerArray(String s, int size) {
@@ -67,7 +64,7 @@ public class StaticHelpers {
         return array;
     }
 
-    public static double interpole(double[] xArray, double[] yArray, double value) {
+    /*public static double interpole(double[] xArray, double[] yArray, double value) {
         SplineInterpolator interpolator = new SplineInterpolator();
         UnivariateFunction function = interpolator.interpolate(xArray, yArray);
         return function.value(value);
@@ -83,7 +80,7 @@ public class StaticHelpers {
         SplineInterpolator interpolator = new SplineInterpolator();
         UnivariateFunction function = interpolator.interpolate(xArray, yArray);
         return function.value(value);
-    }
+    }*/
 
     public static void select(List list, Selector selector) {
         if (list.size() < 200) {
@@ -270,4 +267,25 @@ public class StaticHelpers {
         }
         return false;
     }
+    
+    public static String loadResource(String filename) throws Exception {
+        String result;
+        try (InputStream in = StaticHelpers.class.getClass().getResourceAsStream(filename)){
+            Scanner scanner = new Scanner(in, "UTF-8");
+            result = scanner.useDelimiter("\\A").next();
+        }
+        return result;                    
+    }
+    
+    public static List<String> readAllLines(String filename) throws Exception {
+        List<String> list = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(StaticHelpers.class.getClass().getResourceAsStream(filename)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                list.add(line);
+            }
+        }    
+        return list;
+    }
+    
 }
