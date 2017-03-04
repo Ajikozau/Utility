@@ -25,12 +25,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 //import org.apache.commons.math3.analysis.UnivariateFunction;
 //import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 
 public class StaticHelpers {
+    
     public static int[] parseIntegerArray(String s, int size) {
         int[] array;
         array = new int[size];
@@ -82,22 +84,30 @@ public class StaticHelpers {
         return function.value(value);
     }*/
 
-    public static void select(List list, Selector selector) {
-        if (list.size() < 200) {
-            for (Object o2 : list) {
-                if (o2 == null) continue;
-                selector.action(o2);
-            }
-        } else if (list.size() >= 200 && list.size() < 1000) {
-            list.stream().filter(o -> o != null).forEach(o -> {
+    public static <T> void iterateList(List<? extends T> list, Selector<T> selector) {
+        if (list.size() < 100) {
+            for (T o : list) {
+                if (o == null) continue;
                 selector.action(o);
             }
-            );
         } else {
             list.parallelStream().filter(o -> o != null).forEach(o -> {
                 selector.action(o);
+            });
+        }
+    }    
+    
+    public static <T> void iterateSet(Set<? extends T> set, Selector<T> selector){
+        if(set.size() < 100){
+            for (T o : set){
+                if (o == null) continue;
+                selector.action(o);
+                    
             }
-            );
+        } else {
+            set.stream().filter(o -> o != null).forEach(o -> {
+                selector.action(o);
+            });
         }
     }
 
@@ -110,16 +120,10 @@ public class StaticHelpers {
                     selector.action(o2);
                 }
             }
-        } else if (totalLength >= 200 && totalLength < 1000) {
-            Arrays.stream(array).flatMap(a1 -> Arrays.stream(a1)).forEach(o -> {
-                selector.action(o);
-            }
-            );
         } else {
             ((Arrays.stream(array).parallel()).flatMap(a1 -> Arrays.stream(a1)).parallel()).forEach(o -> {
                 selector.action(o);
-            }
-            );
+            });
         }
     }
 
@@ -134,43 +138,27 @@ public class StaticHelpers {
                     }
                 }
             }
-        } else if (totalLength >= 200 && totalLength < 1000) {
-            Arrays.stream(array).flatMap(a1 -> Arrays.stream(a1)).flatMap(a2 -> Arrays.stream(a2)).forEach(o -> {
-                selector.action(o);
-            }
-            );
         } else {
             ((Arrays.stream(array).parallel()).flatMap(a -> (Arrays.stream(a).parallel()).flatMap(a2 -> Arrays.stream(a2).parallel())).parallel()).forEach(o -> {
                 selector.action(o);
-            }
-            );
+            });
         }
     }
 
     public static void build2DObject(int x, int y, Object2DBuilder builder) {
         int totalLength = x * y;
         if (totalLength < 200) {
-            for (int a2 = 0; a2 < x; ++a2) {
+            for (int a = 0; a < x; ++a) {
                 for (int b = 0; b < y; ++b) {
-                    builder.build2Dobject(a2, b);
-                }
-            }
-        } else if (totalLength >= 200 && totalLength < 1000) {
-            IntStream.range(0, x).forEach(a -> {
-                IntStream.range(0, y).forEach(b -> {
                     builder.build2Dobject(a, b);
                 }
-                );
             }
-            );
         } else {
             IntStream.range(0, x).parallel().forEach(a -> {
                 IntStream.range(0, y).parallel().forEach(b -> {
                     builder.build2Dobject(a, b);
-                }
-                );
-            }
-            );
+                });
+            });
         }
     }
 
@@ -184,28 +172,14 @@ public class StaticHelpers {
                     }
                 }
             }
-        } else if (totalLength >= 200 && totalLength < 1000) {
-            IntStream.range(0, x).forEach(a -> {
-                IntStream.range(0, y).forEach(b -> {
-                    IntStream.range(0, z).forEach(c -> {
-                        builder.build3Dobject(a, b, c);
-                    }
-                    );
-                }
-                );
-            }
-            );
         } else {
             IntStream.range(0, x).parallel().forEach(a -> {
                 IntStream.range(0, y).parallel().forEach(b -> {
                     IntStream.range(0, z).parallel().forEach(c -> {
                         builder.build3Dobject(a, b, c);
-                    }
-                    );
-                }
-                );
-            }
-            );
+                    });
+                });
+            });
         }
     }
 
@@ -217,11 +191,6 @@ public class StaticHelpers {
                     array[x2][y] = builder.build2Dobject(x2, y);
                 }
             }
-        } else if (totalLength >= 200 && totalLength < 1000) {
-            IntStream.range(0, array.length).forEach(x -> {
-                Arrays.setAll(array[x], y -> builder.build2Dobject(x, y));
-            }
-            );
         } else {
             ((Stream)IntStream.range(0, array.length).parallel().mapToObj(x -> (String[])((Stream)IntStream.range(0, array[x].length).parallel().mapToObj(y -> builder.build2Dobject(x, y)).parallel()).toArray(x$0 -> new String[x$0])).parallel()).toArray(x$0 -> new String[x$0][]);
         }
@@ -237,14 +206,6 @@ public class StaticHelpers {
                     }
                 }
             }
-        } else if (totalLength >= 200 && totalLength < 1000) {
-            IntStream.range(0, array.length).forEach(x -> {
-                IntStream.range(0, array[x].length).forEach(y -> {
-                    Arrays.setAll(array[x][y], z -> builder.build3Dobject(x, y, z));
-                }
-                );
-            }
-            );
         } else {
             ((Stream)IntStream.range(0, array.length).parallel().mapToObj(x -> (String[][])((Stream)IntStream.range(0, array[x].length).parallel().mapToObj(y -> (String[])((Stream)IntStream.range(0, array[y].length).parallel().mapToObj(z -> builder.build3Dobject(x, y, z)).parallel()).toArray(x$0 -> new String[x$0])).parallel()).toArray(x$0 -> new String[x$0][])).parallel()).toArray(x$0 -> new String[x$0][][]);
         }
@@ -288,4 +249,12 @@ public class StaticHelpers {
         return list;
     }
     
+    public static float[] listToArray(List<Float> list){
+        int size = list != null ? list.size() : 0;
+        float[] floatArr = new float[size];
+        for (int i = 0; i < size; i++){
+            floatArr[i] = list.get(i);
+        }
+        return floatArr;
+    }
 }
